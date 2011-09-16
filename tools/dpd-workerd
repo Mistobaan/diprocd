@@ -1,0 +1,124 @@
+#!/usr/bin/python
+#
+
+# Copyright (C) 2011 Ceondo Ltd.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+
+"""Control processes on a single host.
+
+Implementation:
+ - the worker reads the current state to achieve from a JSON file
+   on disk.
+ - the worker creates a pid file for itself and can thus control
+   if already launched. It correctly checks that if the pid is alive
+   it is alive with itself and not another program.
+ - processes are checked for liveliness every second.
+ - the worker updates its state target when the configuration file
+   changes.
+
+"""
+import optparse
+import logging
+import os
+import sys
+
+from diprocd import worker
+from diprocd.utils import io as utils_io
+from diprocd.utils import process as utils_process
+from diprocd.errors import LockError
+from diprocd.config import GetConfig
+
+"""
+configfile:
+foreground: == option
+quiet: == option
+"""
+
+USAGE = "%prog [-f] [-v] /path/config.json"
+
+def ParseOptions():
+    """Parses the command line options.
+
+    In case of command line errors, it will show the usage and exit the
+    program.
+
+    """
+    parser = optparse.OptionParser(usage="\n%s" % USAGE)
+
+    parser.add_option("-f", "--foreground", dest="daemonize", default=False,
+                      help="run in foreground", action="store_false")
+    parser.add_option("-v", "--verbose",
+                      action="store_true", dest="verbose", default=False,
+                      help="don't print status messages to stdout")
+
+    (options, args) = parser.parse_args()
+
+    if len(args) != 1:
+        parser.error("The configuration file is required.")
+
+    return (options, args[0])
+
+
+def main():
+    """main."""
+    (options, config_file) = ParseOptions()
+    if options.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+    cfg = GetConfig(config_file)
+    if options.daemonize:
+        logging.info("dpd-worker daemon startup.")        
+        utils_process.CloseFDs()
+        wpipe = utils_process.Daemonize(cfg["log_file"])
+    else:
+        wpipe = None
+
+    # If forked as daemon, we are already running. So, we check now
+    # that we can write our pid file. If locked, this means another
+    # one is running, so we quit gracefully. The goal is to be able to
+    # run dpd-worker in a cron job every minute to force it to stay
+    # alive.
+    try:
+        pidlock = utils_io.WritePidFile(cfg["pid_file"])
+    except LockError:
+        logging.debug("Cannot acquire lock. dpd-worker already running, exiting.")        
+        sys.exit(0)
+    #
+    # Here can prepare everything before launching the daemon loop.
+    #
+    
+    if wpipe is not None:
+      # we're done with the preparation phase, we close the pipe to
+      # let the parent know it's safe to exit
+      os.close(wpipe)
+
+    try:
+        refresher = worker.FileRefresher(config_file)
+        worker.Run(cfg, refresher.refresh)
+    finally:
+        utils_io.RemoveFile(cfg["pid_file"])
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print "Received KeyboardInterrupt, aborting"
+        sys.exit(1)

@@ -1,0 +1,14 @@
+The code here is coming directly from the Ganeti project.
+
+You will find the usual 2 space Python indentation coming from the
+Google in-house coding standard.
+
+If you find something crappy in the code, this is most likely
+something I added and you must not assume it is coming from the Ganeti
+project. If you find something good, you can assume it comes from the
+Ganeti project.
+
+Ganeti: http://code.google.com/p/ganeti
+Source: http://git.ganeti.org/
+
+Changes for diprocd: Renamed the imports to use diprocd instead of ganeti.
