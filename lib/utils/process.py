@@ -427,10 +427,10 @@ def _StartDaemonChild(errpipe_read, errpipe_write,
     os.chdir(cwd)
 
     if os.getuid() == 0:
-      if uid:
-        os.setuid(uid)
       if gid:
         os.setgid(gid)
+      if uid:
+        os.setuid(uid)
 
     if env is None:
       os.execvp(args[0], args)
