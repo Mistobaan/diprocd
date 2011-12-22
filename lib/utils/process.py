@@ -318,6 +318,7 @@ def StartDaemon(cmd, env=None, cwd="/", output=None, output_fd=None,
     logging.debug("StartDaemon %s", strcmd)
 
   cmd_env = _BuildCmdEnvironment(env, False)
+  logging.debug("StartDaemon env %s", cmd_env)
 
   # Create pipe for sending PID back
   (pidpipe_read, pidpipe_write) = os.pipe()
