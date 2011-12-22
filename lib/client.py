@@ -30,6 +30,7 @@ import logging
 import simplejson
 import zmq
 import os
+import platform
 
 from time import time
 from diprocd.config import GetConfig, loadConf
@@ -45,6 +46,9 @@ def Run(cfg):
 
     up_receiver = context.socket(zmq.SUB)
     up_receiver.connect(cfg["master_updates"])
+    node_name = cfg["node_name"]
+    if node_name == '%H':
+        node_name = platform.node()
     up_receiver.setsockopt(zmq.SUBSCRIBE, cfg["node_name"])
 
     stats_sender = context.socket(zmq.PUSH)

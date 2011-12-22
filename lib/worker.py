@@ -168,6 +168,7 @@ class Profile:
             logging.debug("Pid written by the application %s." % self.name)
             pid_file = None
         logging.debug("Pid for StartDaemon is %s." % pid_file)
+        logging.debug("Env for %s is %s." % (self.name, self.env))
         self.pid = utils_process.StartDaemon(my_cmd, self.env, self.cwd,
                                              pidfile=pid_file)
         if self.daemon:
