@@ -75,7 +75,7 @@ class Profile:
 
         self.args = cfg.get("args", [])
         self.cwd = cfg.get("cwd", "/")        
-        self.user = cfg.get("user", None)
+        self.user = cfg.get("user", "nobody")
         
         self.chroot = cfg.get("chroot", None)
         self.restart = cfg.get("restart", True)
@@ -170,7 +170,8 @@ class Profile:
         logging.debug("Pid for StartDaemon is %s." % pid_file)
         logging.debug("Env for %s is %s." % (self.name, self.env))
         self.pid = utils_process.StartDaemon(my_cmd, self.env, self.cwd,
-                                             pidfile=pid_file)
+                                             pidfile=pid_file, uid=self.uid,
+                                             gid=self.gid)
         if self.daemon:
             logging.debug("Application %s is a daemon." % self.name)
             # Here the launched command will again fork and write to
