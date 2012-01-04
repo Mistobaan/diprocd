@@ -37,11 +37,12 @@ from diprocd.utils import process as utils_process
 from diprocd.errors import LockError, ConfigurationError
 
 
-# Maximal number of starts we try before giving up.
+# Maximal number of starts within a minute before giving up.
 MAX_STARTS = 5
 STATE_waiting = "waiting"
 STATE_running = "running"
 STATE_ADMIN_down = "ADMIN_down"
+STATE_ADMIN_notrestarted = "ADMIN_notrestarted"
 STATE_ADMIN_needrestart = "ADMIN_needrestart"
 STATE_ERROR_down = "ERROR_down"
 STATE_ERROR_up = "ERROR_up"
@@ -86,6 +87,7 @@ class Profile:
         self.uid = None
         self.gid = None
         self.nb_starts = 0
+        self.starts = [] # All the starts
         
         if self.user:
             try:
@@ -110,7 +112,7 @@ class Profile:
             logging.info("%s already running with pid: %d." % (self.name, pid))
             self.pid = pid
             self.state = STATE_running
-            self.nb_starts = 1
+            self.nb_starts = 0
             self.last_start = int(os.path.getctime("/proc/%d" % self.pid))
 
     def Supervise(self):
@@ -155,8 +157,12 @@ class Profile:
         - you fork, you must create your own pid.
         """
         if self.nb_starts >= self.max_start:
-            logging.debug("%s not restarted (max start reached)." % self.name)
-            return
+            # check that the start max_start ago was for less than 60 ago
+            cut_off = self.starts[-self.max_start]
+            if cut_off > time() - 60:
+                self.state = STATE_ADMIN_notrestarted
+                logging.info("%s not restarted (max start reached in 60s)." % self.name)
+                return
         my_cmd = [self.run] + self.args
         logging.info("Start profile %s." % self.name)
         logging.debug("Pid in %s for %s." % (self.pid_file, self.name))
@@ -180,6 +186,7 @@ class Profile:
         logging.debug("Pid for %s is %s." % (self.name, self.pid))
         self.state = STATE_running
         self.nb_starts += 1
+        self.starts.append(time())
 
     def Stop(self):
         """Stop the profile.
