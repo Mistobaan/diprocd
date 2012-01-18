@@ -50,7 +50,7 @@ def Run(cfg):
     node_name = cfg["node_name"]
     if node_name == '%H':
         node_name = platform.node()
-    up_receiver.setsockopt(zmq.SUBSCRIBE, cfg["node_name"])
+    up_receiver.setsockopt(zmq.SUBSCRIBE, node_name)
 
     stats_sender = context.socket(zmq.PUSH)
     stats_sender.connect(cfg["master_stats"])
