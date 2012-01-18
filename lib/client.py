@@ -46,6 +46,7 @@ def Run(cfg):
 
     up_receiver = context.socket(zmq.SUB)
     up_receiver.connect(cfg["master_updates"])
+    logging.info("Get updates from %s." % cfg["master_updates"])
     node_name = cfg["node_name"]
     if node_name == '%H':
         node_name = platform.node()
@@ -53,14 +54,11 @@ def Run(cfg):
 
     stats_sender = context.socket(zmq.PUSH)
     stats_sender.connect(cfg["master_stats"])
-    
+    logging.info("Push stats on %s." % cfg["master_stats"])    
     poller = zmq.Poller()
     poller.register(up_receiver, zmq.POLLIN)
 
     full_conf = GetConfig(cfg["conf_file"])
-    
-
-
 
     last_read = time()
     while True:
