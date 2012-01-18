@@ -45,13 +45,14 @@ def Run(cfg, configfile):
 
     stats_receiver = context.socket(zmq.PULL)
     stats_receiver.bind(cfg["master_stats"])
-
+    logging.info("Collect stats on %s." % cfg["master_stats"])
     up_sender = context.socket(zmq.PUB)
     up_sender.bind(cfg["master_updates"])
-    
+    logging.info("Publish updates on %s." % cfg["master_updates"])
     poller = zmq.Poller()
     poller.register(stats_receiver, zmq.POLLIN)
-
+    logging.info("Sleep 2 seconds to let clients connect.")
+    time.sleep(2)
     refresh = FileRefresher(configfile)
     last_read = time()
     PublishChanges(cfg, up_sender)    
