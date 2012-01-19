@@ -93,7 +93,6 @@ class FileRefresher:
         
     def refresh(self):
         last_modif = int(os.path.getmtime(self.config_file))
-        logging.info("Last modif time: %d, last update: %d." % (last_modif, self.last_update))
         if last_modif > self.last_update:
             logging.info("Refresh configuration from %s." % self.config_file)
             # We need to update the profiles
