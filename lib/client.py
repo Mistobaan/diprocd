@@ -68,9 +68,10 @@ def Run(cfg):
         if up_receiver in socks and socks[up_receiver] == zmq.POLLIN:
             # New configuration
             config = up_receiver.recv()
-            logging.info(config)
+            logging.debug(config)
             node_name, payload = config.split(" ", 1)
             new_processes = loadConf(payload)
             full_conf["procs"] = new_processes
+            logging.info("Got %d processes in update." % len(new_processes))
             utils_io.WriteFile(cfg["conf_file"],
                                data=simplejson.dumps(full_conf))
