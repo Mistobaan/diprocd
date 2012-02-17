@@ -1,0 +1,6 @@
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+
+# Restart dead masterd, if do not run it as root, update the line.
+# If you changed the default configuration path, change it too..
+*/5 * * * * root [ -x /usr/local/bin/dpd-masterd ] && /usr/local/bin/dpd-masterd /var/lib/diprocd/diprocd-master.json
+

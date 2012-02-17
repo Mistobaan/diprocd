@@ -1,0 +1,6 @@
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+
+# Restart dead clientd, if do not run it as root, update the line.
+# If you changed the default configuration path, change it too..
+*/5 * * * * root [ -x /usr/local/bin/dpd-clientd ] && /usr/local/bin/dpd-clientd /var/lib/diprocd/diprocd-client.json
+

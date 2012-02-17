@@ -1,0 +1,6 @@
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+
+# Restart dead workerd.
+# If you changed the default configuration path, change it.
+*/5 * * * * root [ -x /usr/local/bin/dpd-workerd ] && /usr/local/bin/dpd-workerd /var/lib/diprocd/diprocd-worker.json
+
