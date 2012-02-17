@@ -3,6 +3,6 @@
 #
 # This file is supposed to be in /etc/default/diprocd
 #
-CLIENTDCONF=/var/lib/bareku/diprocd-client.json
-MASTERDCONF=/var/lib/bareku/diprocd-master.json
-WORKERDCONF=/var/lib/bareku/diprocd-worker.json
+CLIENTDCONF=/var/lib/diprocd/diprocd-client.json
+MASTERDCONF=/var/lib/diprocd/diprocd-master.json
+WORKERDCONF=/var/lib/diprocd/diprocd-worker.json

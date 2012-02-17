@@ -1,0 +1,6 @@
+{"pid_file": "/var/run/dpd-clientd.pid",
+ "log_file": "/var/log/dpd-clientd.log",
+ "master_stats": "tcp://192.168.1.1:31123",
+ "master_updates": "tcp://192.168.1.1:31124",
+ "node_name": "%H",
+ "conf_file": "/var/lib/diprocd/diprocd-worker.json"}

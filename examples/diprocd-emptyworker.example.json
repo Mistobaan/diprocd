@@ -1,0 +1,3 @@
+{"pid_file": "/var/run/dpd-workerd.pid", 
+ "log_file": "/var/log/dpd-workerd.log", 
+ "procs": []}

@@ -16,4 +16,139 @@ It is composed of 3 components:
   `dpd-workerd`. The worker automatically pick up the new
   configuration and start/stop/restart processes accordingly.
 
-`diprocd` is robust and used in production.
+`diprocd` is robust and used in production on
+[Debian](http://www.debian.org). The robustness is ensure by using
+process management routines used by the
+[Ganeti](http://notes.ceondo.com/ganeti/) project. It has not been
+tested extensively on Ubuntu (just as a dev box) and support of other
+Linux distribution is not planned by the author — but contributions to
+support other distros are welcomed.
+
+# Installation
+
+As `root` or with super user rights, run:
+
+    python setup.py install
+
+You need the `simplejson` and `zmq` Python modules. You can install
+them with `easy_install`:
+
+    easy_install pyzmq
+    easy_install simplejson
+
+# Documentation
+
+Because the system is composed of tools doing one thing and doing it
+well, you can structure your setup the way you want, from a single
+node to several if not hundreds of them.
+
+## Single Node
+
+You just run one worker on the node, no needs to use the master/client
+system to update the configuration.
+
+1. Copy `/usr/share/doc/diprocd/diprocd-worker.example.json` as 
+   `/var/lib/diprocd/diprocd-worker.json`;
+2. Run as root: `dpd-workerd -f -v /var/lib/diprocd/diprocd-worker.json`.
+
+The processes to be run are defined in
+`/var/lib/diprocd/diprocd-worker.json`, simply some calls to `sleep`
+and `echo`.
+
+The `-f` flag will keep the worker in the foreground and `-v` will
+provide you with a verbose output.
+
+## Distributed
+
+You run one worker and one client on each node *doing some work* and a
+master ond the node *distributing the work*. Note that a node can host
+a master while doing some work as all the processes are small.
+
+**On the worker nodes**:
+
+1. Copy `/usr/share/doc/diprocd/diprocd-emptyworker.example.json` as
+   `/var/lib/diprocd/diprocd-worker.json`;
+2. Run as root: `dpd-workerd -f -v /var/lib/diprocd/diprocd-worker.json`;
+3. Copy `/usr/share/doc/diprocd/diprocd-client.example.json` as
+   `/var/lib/diprocd/diprocd-client.json`;
+4. Edit `/var/lib/diprocd/diprocd-client.json` to match the master ip
+   address. Note the `"%H"` for the node name, it will use the hostname
+   of the node, you can also set it manually.
+5. Run under a user having write access to the `diprocd-worker.json`
+   file: `dpd-clientd -f -v /var/lib/diprocd/diprocd-client.json`;
+   Note that you do not need to be root, the process just needs to be
+   able to update the worker configuration file and connect to the
+   IP:PORT defined in the configuration.
+
+You have nothing left to do, the configuration will be transparently
+updated when updating the master file on the master.
+
+**On the master node**:
+
+1. Copy `/usr/share/doc/diprocd/diprocd-master.example.json` as
+   `/var/lib/diprocd/diprocd-master.json`;
+2. Edit `/var/lib/diprocd/diprocd-master.json` to match the master ip
+   address. The example configuration is providing 2 nodes with one
+   process each, you can create new as needed.
+3. Run: `dpd-masterd -f -v /var/lib/diprocd/diprocd-master.json`. The 
+   master just need to be able to bind to the master IP:PORT and read
+   the `diprocd-master.json` configuration file. It does not need to 
+   run as root.
+
+## Process Definition
+
+In the `worker` and `master` configuration files, the processes are
+defined as a list of simple JSON dictionaries. Here is the definition
+of a single process.
+
+    {"chroot": "/", 
+     "run": "/bin/echo", 
+     "name": "echo.worker.1", 
+     "args": ["foo"], 
+     "user": "nobody", 
+     "env": {"SMTP_PASSWD": "password", 
+             "ENV_KEY": "value", 
+             "SMTP_SERVER": "smtp.foo.tld"}, 
+     "pid_file": "/tmp/echo.pid", 
+     "logs": "/tmp/echo.log", 
+     "cwd": ".", 
+     "write_pid": true,
+     "daemon": false,
+     "restart": true}
+
+- `chroot`: where to chroot the process;
+- `run`: which command to run, full path;
+- `args`: list of arguments for the `run` command;
+- `user`: under which user the command needs to be run;
+- `env`: a dictionary of environment variables to path to the command;
+- `pid_file`: location of the pid file;
+- `logs`: location of the log file. The logfile is only capturing
+  stdout and stderr, you can of course log where you want internally;
+- `cwd`: the working directory when starting the command;
+- `write_pid`: do you let `dpd-workerd` write the pid file. If your process
+  do it itself, set to `false`.
+- `daemon`: is your process forking to run as daemon? If so, you need
+  to set `write_pid` to `false` and your daemon must be smart enough
+  to write its own pid file;
+- `restart`: restart the process if it dies. It will not restart more
+  than 5 times in a minute.
+
+## Robust Setup
+
+You have init scripts to start/stop the daemons. They are simple to
+install, on each node where you want a given daemon to run, simply
+run as root:
+
+    insserv dpd-workerd
+    insserv dpd-clientd
+    insserv dpd-masterd
+
+Of course, if one of your node is only master, you just run 
+`insserv dpd-masterd`.
+
+To restart in case of failure, check the
+`/usr/share/doc/diprocd/*.cron` files. Just copy the needed one in
+`/etc/cron.d`, for example `/etc/cron.d/dpd-workerd`. Each daemon
+script is smart enough to detect if it is already running, this means
+it will not start again if already running.
+

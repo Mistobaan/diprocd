@@ -1,0 +1,24 @@
+{"pid_file": "/var/run/diprocd-masterd.pid", 
+ "log_file": "/var/log/diprocd-masterd.log", 
+ "master_stats": "tcp://192.168.1.1:31123", 
+ "master_updates": "tcp://192.168.1.1:31124"
+ "nodes": {"node1.domain.tld": [{"chroot": "/", 
+				 "run": "/bin/sleep", 
+				 "name": "sleep.worker.1", "args": ["15"], 
+				 "user": "nobody", 
+				 "env": {"SMTP_PASSWD": "password", "ENV_KEY": "value", "SMTP_SERVER": "smtp.foo.tld"}, 
+				 "pid_file": "/tmp/sleep.pid", 
+				 "cwd": ".", 
+				 "restart": true}],
+	   "node2.domain.tld": [{"chroot": "/", 
+				 "run": "/bin/echo", 
+				 "name": "echo.worker.1", 
+				 "args": ["foo"], 
+				 "user": "nobody", 
+				 "env": {"SMTP_PASSWD": "password", "ENV_KEY": "value", "SMTP_SERVER": "smtp.foo.tld"}, 
+				 "pid_file": "/tmp/echo.pid", 
+				 "logs": "/tmp/echo.log", 
+				 "cwd": ".", 
+				 "restart": true}]
+	  }
+}

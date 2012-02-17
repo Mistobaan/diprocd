@@ -21,9 +21,9 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 # Overwritten by the /etc/default/diprocd file
 # Used to set DAEMON_ARGS afterwards.
-CLIENTDCONF=/var/lib/bareku/diprocd-client.json
-MASTERDCONF=/var/lib/bareku/diprocd-master.json
-WORKERDCONF=/var/lib/bareku/diprocd-worker.json
+CLIENTDCONF=/var/lib/diprocd/diprocd-client.json
+MASTERDCONF=/var/lib/diprocd/diprocd-master.json
+WORKERDCONF=/var/lib/diprocd/diprocd-worker.json
 
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0

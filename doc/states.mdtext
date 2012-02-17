@@ -1,0 +1,26 @@
+# States of the Processes
+
+You have basically two categories of states. The ones managed by
+diprocd `ADMIN_*` and the ones coming out of an error `ERROR_*`.
+
+    running
+    ADMIN_down
+    ERROR_down
+    ERROR_up
+    ERROR_wrongnode
+    ERROR_nodedown
+    ERROR_nodeoffline
+
+# How to know that a process is not supposed to run?
+
+## UIDs of the Processes
+
+All the processes managed by the system are started with user id from
+a pool. This allow quick listing of the processes running under these
+ids but not controlled or supposed to be down `ERROR_up` state.
+
+## Command Line Regex or Full Arg
+
+Just allow full command or regex to "grep" the process list and get
+the list of managed processes. Simplest and fastest way.
+
