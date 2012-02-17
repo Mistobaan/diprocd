@@ -1,2 +1,19 @@
-Notes:
+# diprocd 
 
+`diprocd` is the DIstributed PROcess Control Daemon. It takes care of
+managing your processes for you over several nodes with a single point
+of control.
+
+It is composed of 3 components:
+
+- the worker `dpd-workerd`: a traditional process supervisor but
+  simpler as using a single json file to define all the processes;
+- the master `dpd-masterd`: the central manager, it reads a single
+  json configuration file and publish for each client on each node
+  the new list of processes to supervise;
+- the client `dpd-clientd`: it subscribes to the updates from
+  `dpd-masterd` and update the configuration file of
+  `dpd-workerd`. The worker automatically pick up the new
+  configuration and start/stop/restart processes accordingly.
+
+`diprocd` is robust and used in production.
