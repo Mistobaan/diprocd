@@ -1,0 +1,8 @@
+#
+# diprocd paths to the configuration files.
+#
+# This file is supposed to be in /etc/default/diprocd
+#
+CLIENTDCONF=/var/lib/bareku/diprocd-client.json
+MASTERDCONF=/var/lib/bareku/diprocd-master.json
+WORKERDCONF=/var/lib/bareku/diprocd-worker.json
