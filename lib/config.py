@@ -47,6 +47,7 @@ procs is a list of processes to manage.
 
 import simplejson
 import logging
+import sys
 
 def GetConfig(config_file):
   try:
