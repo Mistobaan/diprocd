@@ -17,7 +17,7 @@ It is composed of 3 components:
   configuration and start/stop/restart processes accordingly.
 
 `diprocd` is robust and used in production on
-[Debian](http://www.debian.org). The robustness is ensure by using
+[Debian](http://www.debian.org). The robustness is ensured by using
 process management routines used by the
 [Ganeti](http://notes.ceondo.com/ganeti/) project. It has not been
 tested extensively on Ubuntu (just as a dev box) and support of other
@@ -26,15 +26,18 @@ support other distros are welcomed.
 
 # Installation
 
-As `root` or with super user rights, run:
+As normal user for the clone and then as `root` or with super user
+rights, run:
 
-    python setup.py install
+    $ git clone git://projects.ceondo.com/diprocd.git
+    $ cd diprocd
+    # python setup.py install
 
 You need the `simplejson` and `zmq` Python modules. You can install
 them with `easy_install`:
 
-    easy_install pyzmq
-    easy_install simplejson
+    # easy_install pyzmq
+    # easy_install simplejson
 
 # Documentation
 
