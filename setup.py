@@ -13,9 +13,13 @@ setup(name='diprocd',
       scripts=['tools/dpd-clientd', 'tools/dpd-masterd', 'tools/dpd-workerd'],
       data_files=[('/etc/default', ['init.d/diprocd']),
                   ('/etc/init.d', ['init.d/dpd-clientd', 'init.d/dpd-workerd', 'init.d/dpd-masterd']),
-                  ('/var/lib/diprocd', ['examples/diprocd-worker.example.json',
-                                        'examples/diprocd-client.example.json',
-                                        'examples/diprocd-master.example.json',
-                                        'examples/diprocd-emptyworker.example.json'
+                  ('/usr/share/doc/diprocd', ['examples/diprocd-worker.example.json',
+                                              'examples/diprocd-client.example.json',
+                                              'examples/diprocd-master.example.json',
+                                              'examples/diprocd-emptyworker.example.json',
+                                              'init.d/dpd-clientd.cron', 
+                                              'init.d/dpd-workerd.cron', 
+                                              'init.d/dpd-masterd.cron'])
+
                   ]
      )
