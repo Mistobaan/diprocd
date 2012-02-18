@@ -64,7 +64,7 @@ provide you with a verbose output.
 ## Distributed
 
 You run one worker and one client on each node *doing some work* and a
-master ond the node *distributing the work*. Note that a node can host
+master and the node *distributing the work*. Note that a node can host
 a master while doing some work as all the processes are small.
 
 **On the worker nodes**:
@@ -147,7 +147,10 @@ run as root:
     insserv dpd-masterd
 
 Of course, if one of your node is only master, you just run 
-`insserv dpd-masterd`.
+`insserv dpd-masterd`. You can then start/stop the processes the usual way:
+
+    /etc/init.d/dpd-workerd start
+    /etc/init.d/dpd-workerd stop    
 
 To restart in case of failure, check the
 `/usr/share/doc/diprocd/*.cron` files. Just copy the needed one in
