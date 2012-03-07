@@ -36,8 +36,12 @@ rights, run:
 You need the `simplejson` and `zmq` Python modules. You can install
 them with `easy_install`:
 
+    # apt-get install python-setuptools python-dev
     # easy_install pyzmq
     # easy_install simplejson
+
+The python-setuptools package is to have easy_install and python-dev
+the headers to build the ZMQ extension.
 
 # Documentation
 
